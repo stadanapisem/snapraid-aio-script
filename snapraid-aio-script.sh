@@ -115,6 +115,9 @@ function main(){
     apt-get install -qq -o=Dpkg::Use-Pty=0 python3-markdown;
   fi
 
+  # run the sync before we get to parity checking
+  ssd_cache_sync
+
   # sanity check first to make sure we can access the content and parity files
   mklog "INFO: Checking SnapRAID disks"
   sanity_check
@@ -916,6 +919,21 @@ function output_to_file_screen(){
   exec {OUT}>&1 {ERROR}>&2
   # NOTE: Not preferred format but valid: exec &> >(tee -ia "${TMP_OUTPUT}" )
   exec > >(tee -a "${TMP_OUTPUT}") 2>&1
+}
+
+# Using rsync to copy files from ssd cache to the hdd array; executed before the parity check.
+function ssd_cache_sync(){
+  echo "Running the sync between ssd cache and backing hdd array"
+  mklog "Running the sync between ssd cache and backing hdd array"
+
+  if [[ -z "$SSD_CACHE_FOLDER" ]] || [[ -z "$HDD_ARRAY_BACKING_FODLER" ]] then
+    echo "Caching folder variables not defined!"
+    mklog "Caching folder variables not defined!"
+    return 1
+  fi
+  
+  rsync -avXHR --prune-empty-dirs --remove-source-files --out-format="%f" ${SSD_CACHE_FOLDER}/./ ${HDD_ARRAY_BACKING_FOLDER}/
+  return
 }
 
 # Sends important messages to syslog
