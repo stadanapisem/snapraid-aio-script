@@ -926,7 +926,7 @@ function ssd_cache_sync(){
   echo "Running the sync between ssd cache and backing hdd array"
   mklog "Running the sync between ssd cache and backing hdd array"
 
-  if [[ -z "$SSD_CACHE_FOLDER" ]] || [[ -z "$HDD_ARRAY_BACKING_FODLER" ]] then
+  if [[ -z "$SSD_CACHE_FOLDER" ]] || [[ -z "$HDD_ARRAY_BACKING_FODLER" ]]; then
     echo "Caching folder variables not defined!"
     mklog "Caching folder variables not defined!"
     return 1
